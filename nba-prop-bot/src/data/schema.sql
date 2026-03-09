@@ -1,0 +1,137 @@
+CREATE TABLE IF NOT EXISTS games (
+    game_id TEXT PRIMARY KEY,
+    home_team TEXT,
+    away_team TEXT,
+    commence_time DATETIME,
+    status TEXT
+);
+
+CREATE TABLE IF NOT EXISTS teams (
+    team_id INTEGER PRIMARY KEY,
+    team_name TEXT,
+    abbreviation TEXT
+);
+
+CREATE TABLE IF NOT EXISTS players (
+    player_id INTEGER PRIMARY KEY,
+    target_name TEXT,
+    team_id INTEGER,
+    position TEXT,
+    FOREIGN KEY(team_id) REFERENCES teams(team_id)
+);
+
+CREATE TABLE IF NOT EXISTS injury_reports (
+    game_date DATE,
+    player_name TEXT,
+    team TEXT,
+    status TEXT,
+    PRIMARY KEY (game_date, player_name)
+);
+
+CREATE TABLE IF NOT EXISTS player_game_logs (
+    player_id INTEGER,
+    game_id TEXT,
+    game_date DATE,
+    minutes INTEGER,
+    points INTEGER,
+    rebounds INTEGER,
+    assists INTEGER,
+    threes INTEGER,
+    PRIMARY KEY(player_id, game_id)
+);
+
+CREATE TABLE IF NOT EXISTS team_context_daily (
+    team_id INTEGER,
+    game_date DATE,
+    pace_rating REAL,
+    offensive_rating REAL,
+    defensive_rating REAL,
+    opponent_pts_allowed_per_pos REAL,
+    opponent_reb_allowed_per_pos REAL,
+    opponent_ast_allowed_per_pos REAL,
+    PRIMARY KEY(team_id, game_date)
+);
+
+CREATE TABLE IF NOT EXISTS prop_snapshots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    game_id TEXT,
+    player_name TEXT,
+    market TEXT,
+    line REAL,
+    over_odds REAL,
+    under_odds REAL,
+    implied_over REAL,
+    implied_under REAL,
+    best_book TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS projections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_name TEXT,
+    market TEXT,
+    projected_mean REAL,
+    model_prob_over REAL,
+    model_prob_under REAL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS alerts_sent (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_name TEXT,
+    market TEXT,
+    line REAL,
+    side TEXT,
+    edge REAL,
+    book TEXT,
+    odds REAL,
+    stake REAL DEFAULT 0.0,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bet_results (
+    alert_id INTEGER PRIMARY KEY,
+    actual_result REAL,
+    won BOOLEAN,
+    settled_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(alert_id) REFERENCES alerts_sent(id)
+);
+
+CREATE TABLE IF NOT EXISTS clv_tracking (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id TEXT,
+    market TEXT,
+    side TEXT,
+    alert_odds REAL,
+    alert_time DATETIME,
+    closing_odds REAL,
+    implied_closing REAL,
+    implied_alert REAL,
+    clv REAL,
+    closing_time DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS model_versions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    parameters_json TEXT,
+    performance_metrics TEXT
+);
+
+CREATE TABLE IF NOT EXISTS line_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_name TEXT,
+    market TEXT,
+    bookmaker TEXT,
+    line REAL,
+    side TEXT,
+    odds REAL,
+    implied_prob REAL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bookmaker_profiles (
+    bookmaker TEXT PRIMARY KEY,
+    role TEXT, 
+    historical_clv_score REAL DEFAULT 0.0
+);

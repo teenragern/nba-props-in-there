@@ -1,0 +1,28 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+ODDS_API_KEY = os.getenv("ODDS_API_KEY")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+EDGE_MIN = float(os.getenv("EDGE_MIN", "0.05"))
+MIN_PROJECTED_MINUTES = float(os.getenv("MIN_PROJECTED_MINUTES", "15.0"))
+ODDS_REGION = os.getenv("ODDS_REGION", "us")
+BOOKMAKERS_RAW = os.getenv("BOOKMAKERS", "draftkings,fanduel,betmgm,caesars")
+BOOKMAKERS = BOOKMAKERS_RAW.split(",") if BOOKMAKERS_RAW else []
+
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+DB_PATH = os.getenv("DB_PATH", "props.db")
+
+# Run Risk Management
+BANKROLL = float(os.getenv("BANKROLL", "1000.0"))
+KELLY_FRACTION = float(os.getenv("KELLY_FRACTION", "0.25"))
+
+PROP_MARKETS = [
+    "player_points",
+    "player_rebounds",
+    "player_assists",
+    "player_threes",
+    "player_points_rebounds_assists"
+]
